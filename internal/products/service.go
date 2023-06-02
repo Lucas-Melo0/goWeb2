@@ -2,7 +2,7 @@ package products
 
 type Service interface {
 	GetAll() ([]Product, error)
-	Insert(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
+	Insert(name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
 }
 
 type service struct {
@@ -16,8 +16,18 @@ func (s *service) GetAll() ([]Product, error) {
 	}
 	return ps, nil
 }
+func (s *service) Insert(name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error) {
+	id, err := s.repository.LastId()
+	if err != nil {
+		return Product{}, err
+	}
+	id++
+	p, err := s.repository.Insert(id, name, color, price, stock, code, isPublicated, creationDate)
 
-func NewService(r Repository) service {
+	return p, err
+}
+
+func NewService(r Repository) Service {
 	return &service{
 		repository: r,
 	}
