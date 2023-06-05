@@ -3,6 +3,7 @@ package handler
 import (
 	"main/internal/products"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func NewProduct(p products.Service) *Product {
 func (p *Product) GetAll() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("token")
-		if token != "123" {
+		if token != os.Getenv("token") {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "token inválido",
 			})
@@ -48,7 +49,7 @@ func (p *Product) GetAll() gin.HandlerFunc {
 func (p *Product) Insert() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("token")
-		if token != "123" {
+		if token != os.Getenv("token") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "token inválido"})
 			return
 		}
@@ -70,7 +71,7 @@ func (p *Product) Insert() gin.HandlerFunc {
 func (p *Product) Update() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("token")
-		if token != "123" {
+		if token != os.Getenv("token") {
 			c.JSON(401, gin.H{"error": "token inválido"})
 			return
 		}
@@ -119,7 +120,7 @@ func (p *Product) Update() gin.HandlerFunc {
 func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("token")
-		if token != "123" {
+		if token != os.Getenv("token") {
 			c.JSON(401, gin.H{"error": "token inválido"})
 			return
 		}
@@ -148,7 +149,7 @@ func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
 func (p *Product) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("token")
-		if token != "123" {
+		if token != os.Getenv("token") {
 			c.JSON(401, gin.H{"error": "token inválido"})
 			return
 		}
