@@ -3,6 +3,7 @@ package products
 type Service interface {
 	GetAll() ([]Product, error)
 	Insert(name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
+	Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
 }
 
 type service struct {
@@ -24,6 +25,10 @@ func (s *service) Insert(name string, color string, price int, stock int, code s
 	id++
 	p, err := s.repository.Insert(id, name, color, price, stock, code, isPublicated, creationDate)
 
+	return p, err
+}
+func (s *service) Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error) {
+	p, err := s.repository.Update(id, name, color, price, stock, code, isPublicated, creationDate)
 	return p, err
 }
 

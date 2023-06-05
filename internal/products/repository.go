@@ -1,6 +1,9 @@
 package products
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type Product struct {
 	ID           int    `json:"id"`
@@ -19,6 +22,7 @@ var oldId int
 type Repository interface {
 	GetAll() ([]Product, error)
 	Insert(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
+	Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
 	LastId() (int, error)
 }
 
@@ -37,6 +41,21 @@ func (r *repository) Insert(id int, name string, color string, price int, stock 
 	p := Product{id, name, color, price, stock, code, isPublicated, creationDate}
 	ps = append(ps, p)
 	oldId = p.ID
+	return p, nil
+}
+func (r *repository) Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error) {
+	p := Product{Name: name, Color: color, Price: price, Stock: stock, Code: code, IsPublicated: isPublicated, CreationDate: creationDate}
+	updated := false
+	for i := range ps {
+		if ps[i].ID == id {
+			p.ID = id
+			ps[i] = p
+			updated = true
+		}
+	}
+	if !updated {
+		return Product{}, fmt.Errorf("product %d not found", id)
+	}
 	return p, nil
 }
 
