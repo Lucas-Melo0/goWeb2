@@ -18,6 +18,7 @@ func main() {
 		products.POST("/", p.Insert())
 		products.GET("/", p.GetAll())
 		products.PUT("/:id", p.Update())
+		products.DELETE("/:id", p.Delete())
 
 	}
 	r.Run()
