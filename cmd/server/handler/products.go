@@ -116,6 +116,35 @@ func (p *Product) Update() gin.HandlerFunc {
 		c.JSON(200, p)
 	}
 }
+func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("token")
+		if token != "123" {
+			c.JSON(401, gin.H{"error": "token inválido"})
+			return
+		}
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "invalid ID"})
+			return
+		}
+		var req request
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		if req.Name == "" && req.Price == 0 {
+			c.JSON(400, gin.H{"error": "O preco ou o nome tem que ser atualizados"})
+			return
+		}
+		p, err := p.service.UpdateNameAndPrice(int(id), req.Name, int(req.Price))
+		if err != nil {
+			c.JSON(404, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, p)
+	}
+}
 func (p *Product) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("token")

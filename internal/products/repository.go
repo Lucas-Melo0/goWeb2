@@ -23,6 +23,7 @@ type Repository interface {
 	GetAll() ([]Product, error)
 	Insert(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
 	Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
+	UpdateNameAndPrice(id int, name string, price int) (Product, error)
 	Delete(id int) error
 	LastId() (int, error)
 }
@@ -51,6 +52,23 @@ func (r *repository) Update(id int, name string, color string, price int, stock 
 		if ps[i].ID == id {
 			p.ID = id
 			ps[i] = p
+			updated = true
+		}
+	}
+	if !updated {
+		return Product{}, fmt.Errorf("product %d not found", id)
+	}
+	return p, nil
+}
+
+func (r *repository) UpdateNameAndPrice(id int, name string, price int) (Product, error) {
+	updated := false
+	var p Product
+	for i := range ps {
+		if ps[i].ID == id {
+			ps[i].Name = name
+			ps[i].Price = price
+			p = ps[i]
 			updated = true
 		}
 	}

@@ -4,6 +4,7 @@ type Service interface {
 	GetAll() ([]Product, error)
 	Insert(name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
 	Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error)
+	UpdateNameAndPrice(id int, name string, price int) (Product, error)
 	Delete(id int) error
 }
 
@@ -30,6 +31,10 @@ func (s *service) Insert(name string, color string, price int, stock int, code s
 }
 func (s *service) Update(id int, name string, color string, price int, stock int, code string, isPublicated bool, creationDate string) (Product, error) {
 	p, err := s.repository.Update(id, name, color, price, stock, code, isPublicated, creationDate)
+	return p, err
+}
+func (s *service) UpdateNameAndPrice(id int, name string, price int) (Product, error) {
+	p, err := s.repository.UpdateNameAndPrice(id, name, price)
 	return p, err
 }
 func (s *service) Delete(id int) error {
