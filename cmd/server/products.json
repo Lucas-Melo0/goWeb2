@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "nome": "Produto",
+    "cor": "Azul",
+    "preco": 200,
+    "estoque": 10000,
+    "codigo": "AB123444444",
+    "publicacao": false,
+    "data_de_criacao": "2023-01-01"
+  },
+  {
+    "id": 2,
+    "nome": "Produto",
+    "cor": "Azul",
+    "preco": 200,
+    "estoque": 10000,
+    "codigo": "AB123444444",
+    "publicacao": false,
+    "data_de_criacao": "2023-01-01"
+  },
+  {
+    "id": 3,
+    "nome": "Produto",
+    "cor": "Azul",
+    "preco": 200,
+    "estoque": 10000,
+    "codigo": "AB123444444",
+    "publicacao": false,
+    "data_de_criacao": "2023-01-01"
+  }
+]
