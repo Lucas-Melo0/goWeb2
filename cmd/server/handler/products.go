@@ -2,8 +2,8 @@ package handler
 
 import (
 	"main/internal/products"
+	"main/pkg/store/web"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -25,150 +25,173 @@ type Product struct {
 func NewProduct(p products.Service) *Product {
 	return &Product{service: p}
 }
+
+// ListProducts godoc
+// @Summary List products
+// @Tags Products
+// @Description get products
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Success 200 {object} web.Response
+// @Router /products [get]
 func (p *Product) GetAll() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token != os.Getenv("token") {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "token inválido",
-			})
-			return
-		}
-
 		p, err := p.service.GetAll()
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
+			c.JSON(http.StatusInternalServerError, web.NewResponse(500, err, ""))
 			return
 		}
-		c.JSON(http.StatusOK, p)
+		c.JSON(http.StatusOK, web.NewResponse(200, p, ""))
 	}
 }
 
+// InsertProducts godoc
+// @Summary Insert products
+// @Tags Products
+// @Description insert products
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param product body request true "Product to insert"
+// @Success 200 {object} web.Response
+// @Router /products [post]
 func (p *Product) Insert() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token != os.Getenv("token") {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "token inválido"})
-			return
-		}
 		var req request
 		if err := c.Bind(&req); err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": err.Error(),
-			})
+			c.JSON(http.StatusNotFound, web.NewResponse(404, nil, ""))
 			return
 		}
 		p, err := p.service.Insert(req.Name, req.Color, req.Price, req.Stock, req.Code, req.IsPublicated, req.CreationDate)
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, web.NewResponse(404, nil, ""))
 			return
 		}
-		c.JSON(http.StatusCreated, p)
+		c.JSON(http.StatusCreated, web.NewResponse(200, p, ""))
 	}
 }
+
+// UpdateProduct godoc
+// @Summary Update a product
+// @Tags Products
+// @Description update product details
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param id path int true "Product ID"
+// @Param product body request true "Product to update"
+// @Success 200 {object} web.Response
+// @Router /products/{id} [put]
 func (p *Product) Update() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("token")
-		if token != os.Getenv("token") {
-			c.JSON(401, gin.H{"error": "token inválido"})
-			return
-		}
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
-			c.JSON(400, gin.H{"error": "invalid ID"})
+			c.JSON(http.StatusNotFound, web.NewResponse(400, nil, ""))
 			return
 		}
 		var req request
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Name == "" {
-			c.JSON(400, gin.H{"error": "O nome do produto é obrigatório"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Color == "" {
-			c.JSON(400, gin.H{"error": "A cor do produto é obrigatório"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Stock == 0 {
-			c.JSON(400, gin.H{"error": "A quantidade em estoque é obrigatória"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Price == 0 {
-			c.JSON(400, gin.H{"error": "O preço é obrigatório"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Code == "" {
-			c.JSON(400, gin.H{"error": "O código é obrigatório"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.CreationDate == "" {
-			c.JSON(400, gin.H{"error": "A data de criação é obrigatória"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		p, err := p.service.Update(int(id), req.Name, req.Color, int(req.Price), int(req.Stock), req.Code, bool(req.IsPublicated), req.CreationDate)
 		if err != nil {
-			c.JSON(404, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, web.NewResponse(400, nil, ""))
 			return
 		}
-		c.JSON(200, p)
+		c.JSON(http.StatusOK, web.NewResponse(200, p, ""))
 	}
 }
+
+// UpdateProductNameAndPrice godoc
+// @Summary Update a product's name and price
+// @Tags Products
+// @Description update product's name and price
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param id path int true "Product ID"
+// @Param product body request true "Product to update"
+// @Success 200 {object} web.Response
+// @Router /products/{id} [patch]
 func (p *Product) UpdateNameAndPrice() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("token")
-		if token != os.Getenv("token") {
-			c.JSON(401, gin.H{"error": "token inválido"})
-			return
-		}
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
-			c.JSON(400, gin.H{"error": "invalid ID"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, "bad request"))
 			return
 		}
 		var req request
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		if req.Name == "" && req.Price == 0 {
-			c.JSON(400, gin.H{"error": "O preco ou o nome tem que ser atualizados"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 		p, err := p.service.UpdateNameAndPrice(int(id), req.Name, int(req.Price))
 		if err != nil {
-			c.JSON(404, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, web.NewResponse(500, nil, ""))
 			return
 		}
-		c.JSON(200, p)
+		c.JSON(http.StatusOK, web.NewResponse(200, p, ""))
 	}
 }
+
+// DeleteProduct godoc
+// @Summary Delete a product
+// @Tags Products
+// @Description delete a product
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param id path int true "Product ID"
+// @Success 204 {object} web.Response
+// @Router /products/{id} [delete]
 func (p *Product) Delete() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("token")
-		if token != os.Getenv("token") {
-			c.JSON(401, gin.H{"error": "token inválido"})
-			return
-		}
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
-			c.JSON(400, gin.H{"error": "invalid ID"})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, "bad request"))
 			return
 		}
 		var req request
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, web.NewResponse(400, nil, ""))
 			return
 		}
 
 		err = p.service.Delete(int(id))
 		if err != nil {
-			c.JSON(404, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, web.NewResponse(500, nil, ""))
 			return
 		}
-		c.JSON(204, p)
+		c.JSON(http.StatusNoContent, web.NewResponse(204, p, ""))
 	}
 }

@@ -1,32 +1,32 @@
 [
   {
     "id": 1,
-    "nome": "Produto",
-    "cor": "Azul",
+    "nome": "Produto 1",
+    "cor": "Vermelho",
     "preco": 200,
-    "estoque": 10000,
-    "codigo": "AB123444444",
-    "publicacao": false,
+    "estoque": 10,
+    "codigo": "AB1234",
+    "publicacao": true,
     "data_de_criacao": "2023-01-01"
   },
   {
     "id": 2,
-    "nome": "Produto",
-    "cor": "Azul",
+    "nome": "Produto 1",
+    "cor": "Vermelho",
     "preco": 200,
-    "estoque": 10000,
-    "codigo": "AB123444444",
-    "publicacao": false,
+    "estoque": 10,
+    "codigo": "AB1234",
+    "publicacao": true,
     "data_de_criacao": "2023-01-01"
   },
   {
     "id": 3,
-    "nome": "Produto",
-    "cor": "Azul",
+    "nome": "Produto 1",
+    "cor": "Vermelho",
     "preco": 200,
-    "estoque": 10000,
-    "codigo": "AB123444444",
-    "publicacao": false,
+    "estoque": 10,
+    "codigo": "AB1234",
+    "publicacao": true,
     "data_de_criacao": "2023-01-01"
   }
 ]
